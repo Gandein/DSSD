@@ -11,6 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'FormController@mostrarForm');
+
+Route::get('enviarForm', 'FormController@enviarForm');
+
+Route::get('generarToken', 'FormController@generarToken');
+
+Route::get('obtenerVariable', 'FormController@obtenerVariable');
