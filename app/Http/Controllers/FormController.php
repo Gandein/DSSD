@@ -16,7 +16,7 @@ class FormController extends Controller
   }
 
   public function mostrarForm(Request $request)
-  {
+  {/*
     //$request->id; id de la tarea enviado por get, apartir de esta tengo que buscar el caseId
     session(['idTarea' => $request->id]);
 
@@ -43,8 +43,8 @@ class FormController extends Controller
       'headers'=>[
         'X-Bonita-API-Token' => $token
       ]
-    ]);
-    //return view('form');
+    ]);*/
+    return view('form');
   }
 
   public function enviarForm()
@@ -65,7 +65,7 @@ class FormController extends Controller
 
   public function obtenerVariable()
   {
-    
+
   }
 
 }
