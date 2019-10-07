@@ -16,7 +16,7 @@ class FormController extends Controller
   }
 
   public function mostrarForm(Request $request)
-  {/*
+  {
     //$request->id; id de la tarea enviado por get, apartir de esta tengo que buscar el caseId
     session(['idTarea' => $request->id]);
 
@@ -28,22 +28,95 @@ class FormController extends Controller
 
     //Decodifico respuesta y obtengo el caseId
     $res = json_decode($res->getBody());
-    //echo $res->rootCaseId;
+    session(['idCase' => $res->rootCaseId]);
 
     //Obtengo cookie para enviar como token
     $token = $this->client->getConfig('cookies')->getCookieByName('X-Bonita-API-Token')->getValue();
 
-    //Envio solicitud para cambiar el valor de la variable "emailprueba" del caso 1003
-    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/1003/emailprueba',
+    //Envio solicitud para cambiar el valor de la variable "lugar"
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/lugar',
     [
       'json' => [
         'type' => 'java.lang.String',
-        'value' => 'casa'
+        'value' => 'unLugar'
       ],
       'headers'=>[
         'X-Bonita-API-Token' => $token
       ]
-    ]);*/
+    ]);
+
+    //Envio solicitud para cambiar el valor de la variable "fecha"
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/fecha',
+    [
+      'json' => [
+        'type' => 'java.util.Date',
+        'value' => 'Mon Sep 30 15:02:08 ART 2019'
+      ],
+      'headers'=>[
+        'X-Bonita-API-Token' => $token
+      ]
+    ]);
+
+    //Envio solicitud para cambiar el valor de la variable "motivo"
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/motivo',
+    [
+      'json' => [
+        'type' => 'java.lang.String',
+        'value' => 'un Motivo'
+      ],
+      'headers'=>[
+        'X-Bonita-API-Token' => $token
+      ]
+    ]);
+
+    //Envio solicitud para cambiar el valor de la variable "numeroCausa"
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/numeroCausa',
+    [
+      'json' => [
+        'type' => 'java.lang.String',
+        'value' => 'unNumeroCausa'
+      ],
+      'headers'=>[
+        'X-Bonita-API-Token' => $token
+      ]
+    ]);
+
+    //Envio solicitud para cambiar el valor de la variable "participantesSinParsear"
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/participantesSinParsear',
+    [
+      'json' => [
+        'type' => 'java.lang.String',
+        'value' => 'id1,nombre1,email1;id2,nombre2,email2;id3,nombre3,email3'
+      ],
+      'headers'=>[
+        'X-Bonita-API-Token' => $token
+      ]
+    ]);
+
+    //Envio solicitud para cambiar el valor de la variable "solicitanteSinParsear"
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/solicitanteSinParsear',
+    [
+      'json' => [
+        'type' => 'java.lang.String',
+        'value' => 'idSolicitane,nombreSolicitante,emailSolicitante'
+      ],
+      'headers'=>[
+        'X-Bonita-API-Token' => $token
+      ]
+    ]);
+
+    //Envio solicitud para completar la idTarea
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/activity/' . session("idTarea"),
+    [
+      'json' => [
+        'state' => 'completed',
+        'variables' => '[]'
+      ],
+      'headers'=>[
+        'X-Bonita-API-Token' => $token
+      ]
+    ]);
+
     return view('form');
   }
 
