@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use DateTime;
+use \App\Participante;
 
 class FormController extends Controller
 {
@@ -13,6 +15,17 @@ class FormController extends Controller
   {
     //Creo cliente con cookies "compartidas" entre peticiones
     $this->client = new Client(['cookies' => true]);
+  }
+
+  public function generarToken()
+  {
+    $this->client->request('POST', 'http://localhost:8080/bonita/loginservice', [
+      'query' => [
+        'username' => 'walter.bates',
+        'password' => 'bpm',
+        'redirect' => false
+      ]
+    ]);
   }
 
   public function mostrarForm(Request $request)
@@ -30,15 +43,38 @@ class FormController extends Controller
     $res = json_decode($res->getBody());
     session(['idCase' => $res->rootCaseId]);
 
+    return view('form');
+  }
+
+
+  //{solicitante: <id>, fecha:<input->type="datetime-local">,participates: [<id1>, <id2>, ...], motivo: <String>, numeroCausa: <String o int> }
+  public function enviarForm(Request $request)
+  {
+    $this->generarToken();
+    $solicitante = Participante::with('tipo_participante')->find($request->solicitante);
+    $participantes = Participante::with('tipo_participante')->find($request->participantes);
+
     //Obtengo cookie para enviar como token
     $token = $this->client->getConfig('cookies')->getCookieByName('X-Bonita-API-Token')->getValue();
 
-    //Envio solicitud para cambiar el valor de la variable "lugar"
-    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/lugar',
+    //Envio solicitud para cambiar el valor de la variable "unidad"
+    $unidad = "";
+    //¿El solicitante es el interno?
+    if ($solicitante->tipo_participante->tipo == "interno") {
+      $unidad = $solicitante->unidad
+    }else{
+      //Si no es, lo busco entre los participantes
+      $interno = $participantes->first(function ($p) {
+        return $p->tipo_participante->tipo == "interno";
+      });
+      $unidad = $interno->unidad;
+    }
+
+    $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/unidad',
     [
       'json' => [
         'type' => 'java.lang.String',
-        'value' => 'unLugar'
+        'value' => $unidad
       ],
       'headers'=>[
         'X-Bonita-API-Token' => $token
@@ -46,11 +82,13 @@ class FormController extends Controller
     ]);
 
     //Envio solicitud para cambiar el valor de la variable "fecha"
+    $fecha = new DateTime($request->fecha);
+    $fecha =  $fecha->format('D M d H:i:s') . " ART " . $fecha->format('Y');
     $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/fecha',
     [
       'json' => [
         'type' => 'java.util.Date',
-        'value' => 'Mon Sep 30 15:02:08 ART 2019'
+        'value' => $fecha
       ],
       'headers'=>[
         'X-Bonita-API-Token' => $token
@@ -58,11 +96,12 @@ class FormController extends Controller
     ]);
 
     //Envio solicitud para cambiar el valor de la variable "motivo"
+    $motivo = $request->motivo;
     $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/motivo',
     [
       'json' => [
         'type' => 'java.lang.String',
-        'value' => 'un Motivo'
+        'value' => $motivo
       ],
       'headers'=>[
         'X-Bonita-API-Token' => $token
@@ -70,11 +109,12 @@ class FormController extends Controller
     ]);
 
     //Envio solicitud para cambiar el valor de la variable "numeroCausa"
+    $numeroCausa = $request->numeroCausa
     $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/numeroCausa',
     [
       'json' => [
         'type' => 'java.lang.String',
-        'value' => 'unNumeroCausa'
+        'value' => $numeroCausa
       ],
       'headers'=>[
         'X-Bonita-API-Token' => $token
@@ -82,11 +122,16 @@ class FormController extends Controller
     ]);
 
     //Envio solicitud para cambiar el valor de la variable "participantesSinParsear"
+    $participantesSinParsear = "";
+    foreach ($participantes as $participante) {
+      $participantesSinParsear = $participante->id . "," . $participante->email . "," . $participante->nombre . " " . $participante->apellido . ";";
+    }
+
     $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/participantesSinParsear',
     [
       'json' => [
         'type' => 'java.lang.String',
-        'value' => 'id1,nombre1,email1;id2,nombre2,email2;id3,nombre3,email3'
+        'value' => $participantesSinParsear
       ],
       'headers'=>[
         'X-Bonita-API-Token' => $token
@@ -94,11 +139,13 @@ class FormController extends Controller
     ]);
 
     //Envio solicitud para cambiar el valor de la variable "solicitanteSinParsear"
+    $solicitanteSinParsear = $solicitante->id . "," . $solicitante->nombre . " " . $solicitante->apellido . "," . $solicitante->email;
+
     $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/solicitanteSinParsear',
     [
       'json' => [
         'type' => 'java.lang.String',
-        'value' => 'idSolicitane,nombreSolicitante,emailSolicitante'
+        'value' => $solicitanteSinParsear
       ],
       'headers'=>[
         'X-Bonita-API-Token' => $token
@@ -116,29 +163,6 @@ class FormController extends Controller
         'X-Bonita-API-Token' => $token
       ]
     ]);
-
-    return view('form');
-  }
-
-  public function enviarForm()
-  {
-    return "asd";
-  }
-
-  public function generarToken()
-  {
-    $this->client->request('POST', 'http://localhost:8080/bonita/loginservice', [
-      'query' => [
-        'username' => 'walter.bates',
-        'password' => 'bpm',
-        'redirect' => false
-      ]
-    ]);
-  }
-
-  public function obtenerVariable()
-  {
-
   }
 
 }

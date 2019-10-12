@@ -96,6 +96,11 @@
             <textarea class="form-control" id="motivoConferencia" rows="2"></textarea>
           </div>
 
+          <div class="form-group">
+            <label for="">Motivo de la videoconferencia</label>
+            <input type="datetime-local" name="prueba" class="form-control" id="motivoConferencia" rows="2"></input>
+          </div>
+
           <button type="submit" class="btn btn-primary">Submit</button>
 
         </form>
