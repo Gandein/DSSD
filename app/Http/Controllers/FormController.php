@@ -61,7 +61,7 @@ class FormController extends Controller
     $unidad = "";
     //¿El solicitante es el interno?
     if ($solicitante->tipo_participante->tipo == "interno") {
-      $unidad = $solicitante->unidad
+      $unidad = $solicitante->unidad;
     }else{
       //Si no es, lo busco entre los participantes
       $interno = $participantes->first(function ($p) {
@@ -109,7 +109,7 @@ class FormController extends Controller
     ]);
 
     //Envio solicitud para cambiar el valor de la variable "numeroCausa"
-    $numeroCausa = $request->numeroCausa
+    $numeroCausa = $request->numeroCausa;
     $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/numeroCausa',
     [
       'json' => [
