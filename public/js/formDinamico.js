@@ -164,12 +164,12 @@ function addInput(){
      else {
           var divParticipante = document.createElement('div');
           var divRol = document.createElement('div');
-          divParticipante.className= "form-group col-md-6 autocomplete mt-3 mb-0";
+          divParticipante.className= "form-group col-md-6 autocomplete";
           var inputParticipante = document.createElement('input');
           inputParticipante.id="nombreParticipante" + (counter + 1);
           inputParticipante.type="text";
           //inputParticipante.name="losNombres[]";
-          inputParticipante.className="form-control form-group col-md-6";
+          inputParticipante.className="form-control";
           inputParticipante.placeholder="Nombre del participante";
           divParticipante.innerHTML = "<label>Nombre Participante " + (counter + 1) + "</label>";
           divParticipante.appendChild(inputParticipante);

@@ -29,9 +29,9 @@
               <input type="text" class="form-control" id="solicitante" placeholder="Nombre del solicitante">
             </div>-->
             <div class="form-row">
-              <div class="form-group col-md-6 mb-0">
+              <div class="form-group col-md-6 autocomplete">
                 <label for="">Solicitante</label>
-                <input type="text" class="form-control form-group col-md-6 mb-1" id="solicitante" placeholder="Nombre del solicitante">
+                <input type="text" class="form-control" id="solicitante" placeholder="Nombre del solicitante">
               </div>
               <div class="form-group col-md-6">
                 <label for="">Rol Solicitante</label>
@@ -48,9 +48,9 @@
               <input type="text" class="form-control" id="numCausa" placeholder="Ingrese número de causa">
             </div>
             <div class="form-row" id="dynamicInput">
-              <div class="form-group col-md-6 autocomplete mt-3 mb-0">
+              <div class="form-group col-md-6 autocomplete">
                 <label for="">Nombre Participante 1</label>
-                <input type="text" class="form-control form-group col-md-6" id="nombreParticipante1" placeholder="Nombre del participante">
+                <input type="text" class="form-control" id="nombreParticipante1" placeholder="Nombre del participante">
               </div>
               <div class="form-group col-md-6">
                 <label for="">Rol 1</label>
@@ -90,15 +90,17 @@
     <script src="js/jquery.datetimepicker.full.js"></script>
 
     <script>
-      //ACA HACER PUSH DE LAS FECHAS QUE SE QUIERAN BLOQUEAR
-      var bloqueadas = ['14.10.2019','02.01.2014'];
-      jQuery(document).ready(function () {
-        'use strict';
-        jQuery.datetimepicker.setLocale('es');
-        jQuery('#filter-date, #search-from-date, #search-to-date').datetimepicker(
-          {disabledDates: bloqueadas, formatDate:'d.m.Y'}
-        );
-      });
+        //ACA HACER PUSH DE LAS FECHAS QUE SE QUIERAN BLOQUEAR O PERMITIR
+    var fechasBloqueadas = ['14.10.2019','02.01.2014'];
+    var fechasPermitidas = ['21.10.2019', '23.10.2019'];
+    var horariosPermitidos = ['12:00','13:10'];
+        jQuery(document).ready(function () {
+            'use strict';
+    jQuery.datetimepicker.setLocale('es');
+            jQuery('#filter-date, #search-from-date, #search-to-date').datetimepicker(
+              {disabledDates: fechasBloqueadas,allowDates: fechasPermitidas,allowTimes: horariosPermitidos, formatDate:'d.m.Y'}
+            );
+        });
     </script>
 
   </body>
