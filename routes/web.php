@@ -13,8 +13,8 @@
 
 Route::get('/', 'FormController@mostrarForm');
 
-Route::get('enviarForm', 'FormController@enviarForm');
+Route::post('enviarForm', 'FormController@enviarForm');
 
 Route::prefix('api')->group(function () {
-    Route::get('participantes', 'ApiController@getParticipantes');
+    Route::get('participantes', 'ApiController@getParticipantes')->middleware('cors');
 });

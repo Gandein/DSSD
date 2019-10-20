@@ -124,7 +124,7 @@ class FormController extends Controller
     //Envio solicitud para cambiar el valor de la variable "participantesSinParsear"
     $participantesSinParsear = "";
     foreach ($participantes as $participante) {
-      $participantesSinParsear = $participante->id . "," . $participante->email . "," . $participante->nombre . " " . $participante->apellido . ";";
+      $participantesSinParsear = $participantesSinParsear . $participante->id . "," . $participante->nombre . " " . $participante->apellido . "," . $participante->email . ";";
     }
 
     $res = $this->client->request('PUT','http://localhost:8080/bonita/API/bpm/caseVariable/' . session("idCase") . '/participantesSinParsear',
@@ -163,6 +163,7 @@ class FormController extends Controller
         'X-Bonita-API-Token' => $token
       ]
     ]);
-  }
 
+    return ["estado" => "ok"];
+  }
 }
