@@ -11,9 +11,13 @@
 |
 */
 
-Route::get('/', 'FormController@mostrarForm');
+Route::get('formDatosConferencia', 'FormController@mostrarFormDatosConferencia');
+
+Route::get('formLugaresSugeridos', 'FormController@mostrarFormLugaresSugeridos');
 
 Route::post('enviarForm', 'FormController@enviarForm');
+
+Route::post('enviarFormLugaresSugeridos', 'FormController@enviarFormLugaresSugeridos');
 
 Route::prefix('api')->group(function () {
     Route::get('participantes', 'ApiController@getParticipantes')->middleware('cors');
