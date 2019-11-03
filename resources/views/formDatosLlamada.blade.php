@@ -22,36 +22,37 @@
         <h2>¿En qué forma se desarrolló la videollamada?</h2>
         &nbsp;&nbsp;
 
-        <form autocomplete="off" action="/action_page.php">
+        <form autocomplete="off" method="post" action="enviarFormEstadosVideoconferencia">
           <div class="form-row">
             <div class="form-group col-md-10">
               <h6 for="">Indique cómo sucedió el inicio de la llamada:</h6>
 
-                  <input type="radio" name="inicioLlamada" value="iniciadaEnTermino" checked> Iniciada en término<br>
+              @foreach ($estados_inicio as $estado)
+                <input type="radio" name="inicioLlamada" value="{{$estado->id}}">{{$estado->estado}}<br>
+              @endforeach
 
-                  <input type="radio" name="inicioLlamada" value="iniciadaConDemora"> Iniciada con demora<br>
-
-                  <input type="radio" name="inicioLlamada" value="noIniciada"> No iniciada<br>
-
-                  <input type="radio" name="inicioLlamada" value="suspendida"> Suspendida<br>
-
-            </div>
-            <div class="form-group col-md-10">
-              <h6 for="">Indique cómo finalizó la llamada:</h6>
-
-                  <input type="radio" name="finalLlamada" value="conDemora" checked> Finalizada con demora<br>
-
-                  <input type="radio" name="finalLlamada" value="problemaTecnico"> Interrumpida por un problema técnico<br>
-
-                  <input type="radio" name="finalLlamada" value="comportamientoDelInterno"> Interrumpida por comportamiento del interno<br>
             </div>
           </div>
           <div class="form-group">
-            <label for="">Registro de las observaciones</label>
-            <textarea class="form-control" id="motivoConferencia" rows="2"></textarea>
+            <label for="">Registro de las observaciones del inicio</label>
+            <textarea class="form-control" id="motivoConferencia" name="observaciones_inicio" rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-10">
+              <h6 for="">Indique cómo finalizó la llamada:</h6>
+
+                  @foreach ($estados_fin as $estado)
+                    <input type="radio" name="finalLlamada" value="{{$estado->id}}">{{$estado->estado}}<br>
+                  @endforeach
+
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="">Registro de las observaciones del final</label>
+            <textarea class="form-control" id="motivoConferencia" name="observaciones_final" rows="2"></textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary" onClick="enviarDatos()">Submit</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
         </form>
 
       </div>

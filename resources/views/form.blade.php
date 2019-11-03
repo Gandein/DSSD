@@ -91,14 +91,13 @@
 
     <script>
         //ACA HACER PUSH DE LAS FECHAS QUE SE QUIERAN BLOQUEAR O PERMITIR
-    var fechasBloqueadas = ['14.10.2019','02.01.2014'];
     var fechasPermitidas = ['21.10.2019', '23.10.2019'];
-    var horariosPermitidos = ['12:00','13:10'];
+    var horariosPermitidos = ['08:00:00', '10:00:00', '13:00:00', '15:00:00'];
         jQuery(document).ready(function () {
             'use strict';
     jQuery.datetimepicker.setLocale('es');
             jQuery('#filter-date, #search-from-date, #search-to-date').datetimepicker(
-              {disabledDates: fechasBloqueadas,allowDates: fechasPermitidas,allowTimes: horariosPermitidos, formatDate:'d.m.Y'}
+              {minDate: 0,allowTimes: horariosPermitidos, formatDate:'d.m.Y'}
             );
         });
     </script>

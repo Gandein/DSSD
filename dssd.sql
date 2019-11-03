@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 12-10-2019 a las 22:46:16
+-- Tiempo de generación: 03-11-2019 a las 05:48:04
 -- Versión del servidor: 5.7.21
 -- Versión de PHP: 7.2.4
 
@@ -32,6 +32,7 @@ DROP TABLE IF EXISTS `estado_videoconferencia`;
 CREATE TABLE IF NOT EXISTS `estado_videoconferencia` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `estado` varchar(100) NOT NULL,
+  `etapa` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
@@ -39,15 +40,15 @@ CREATE TABLE IF NOT EXISTS `estado_videoconferencia` (
 -- Volcado de datos para la tabla `estado_videoconferencia`
 --
 
-INSERT INTO `estado_videoconferencia` (`id`, `estado`) VALUES
-(1, 'iniciada en termino'),
-(2, 'iniciada con demora'),
-(3, 'no iniciada'),
-(4, 'suspendida'),
-(5, 'finalizada en termino'),
-(6, 'finalizada con demora'),
-(7, 'interrumpida por problema tecnico'),
-(8, 'interrumpida por comportamiento del interno');
+INSERT INTO `estado_videoconferencia` (`id`, `estado`, `etapa`) VALUES
+(1, 'iniciada en termino', 'inicio'),
+(2, 'iniciada con demora', 'inicio'),
+(3, 'no iniciada', 'ninguna'),
+(4, 'suspendida', 'inicio'),
+(5, 'finalizada en termino', 'final'),
+(6, 'finalizada con demora', 'final'),
+(7, 'interrumpida por problema tecnico', 'final'),
+(8, 'interrumpida por comportamiento del interno', 'final');
 
 -- --------------------------------------------------------
 
@@ -107,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `participantes` (
 INSERT INTO `participantes` (`id`, `tipo_participante_id`, `apellido`, `nombre`, `email`, `unidad`) VALUES
 (1, 1, 'Interno1', 'Interno1', 'repint1@gmail.com', 1),
 (2, 1, 'Interno2', 'Interno2', 'repint2@gmail.com', 1),
-(3, 1, 'Interno3', 'Interno3', 'repint3@gmail.com', 2),
+(3, 1, 'Interno3', 'Interno3', 'diegoprince08@hotmail.com', 2),
 (4, 1, 'Interno4', 'Interno4', 'repint4@gmail.com', 2),
 (5, 1, 'Interno5', 'Interno5', 'repint5@gmail.com', 3),
 (6, 1, 'Interno6', 'Interno6', 'repint6@gmail.com', 3),
@@ -130,14 +131,14 @@ INSERT INTO `participantes` (`id`, `tipo_participante_id`, `apellido`, `nombre`,
 DROP TABLE IF EXISTS `registro_videoconferencia`;
 CREATE TABLE IF NOT EXISTS `registro_videoconferencia` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `estado` bigint(20) NOT NULL,
-  `fecha` date NOT NULL,
-  `hora` time NOT NULL,
+  `estado_videoconferencia_id` bigint(20) NOT NULL,
   `descripcion` varchar(250) NOT NULL,
-  `videoconferencia` bigint(20) NOT NULL,
+  `videoconferencia_id` bigint(20) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `registro_videoconferencia_FK` (`estado`),
-  KEY `registro_videoconferencia_FK_1` (`videoconferencia`)
+  KEY `registro_videoconferencia_FK` (`estado_videoconferencia_id`),
+  KEY `registro_videoconferencia_FK_1` (`videoconferencia_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -221,33 +222,33 @@ CREATE TABLE IF NOT EXISTS `videoconferencias` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
-  `unidad` bigint(20) NOT NULL,
-  `estado` bigint(20) NOT NULL,
-  `tipo` bigint(20) NOT NULL,
+  `unidad_id` bigint(20) NOT NULL,
+  `estado_id` bigint(20) NOT NULL,
+  `tipo_id` bigint(20) NOT NULL,
   `nro_causa` varchar(100) NOT NULL,
   `motivo` varchar(100) DEFAULT NULL,
-  `solicitante` bigint(20) NOT NULL,
+  `solicitante_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `videoconferencias_FK` (`tipo`),
-  KEY `videoconferencias_FK_1` (`unidad`),
-  KEY `videoconferencias_FK_2` (`estado`),
-  KEY `videoconferencias_FK_3` (`solicitante`)
+  KEY `videoconferencias_FK` (`tipo_id`),
+  KEY `videoconferencias_FK_1` (`unidad_id`),
+  KEY `videoconferencias_FK_2` (`estado_id`),
+  KEY `videoconferencias_FK_3` (`solicitante_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `videoconferencia_participantes`
+-- Estructura de tabla para la tabla `videoconferencia_participante`
 --
 
-DROP TABLE IF EXISTS `videoconferencia_participantes`;
-CREATE TABLE IF NOT EXISTS `videoconferencia_participantes` (
+DROP TABLE IF EXISTS `videoconferencia_participante`;
+CREATE TABLE IF NOT EXISTS `videoconferencia_participante` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `idVideoConferencia` bigint(20) NOT NULL,
-  `idParticipante` bigint(20) NOT NULL,
+  `videoconferencia_id` bigint(20) NOT NULL,
+  `participante_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `idVideoConferencia` (`idVideoConferencia`),
-  KEY `idParticipante` (`idParticipante`)
+  KEY `idVideoConferencia` (`videoconferencia_id`),
+  KEY `idParticipante` (`participante_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -271,24 +272,24 @@ ALTER TABLE `participantes`
 -- Filtros para la tabla `registro_videoconferencia`
 --
 ALTER TABLE `registro_videoconferencia`
-  ADD CONSTRAINT `registro_videoconferencia_FK` FOREIGN KEY (`estado`) REFERENCES `estado_videoconferencia` (`id`),
-  ADD CONSTRAINT `registro_videoconferencia_FK_1` FOREIGN KEY (`videoconferencia`) REFERENCES `videoconferencias` (`id`);
+  ADD CONSTRAINT `registro_videoconferencia_FK` FOREIGN KEY (`estado_videoconferencia_id`) REFERENCES `estado_videoconferencia` (`id`),
+  ADD CONSTRAINT `registro_videoconferencia_FK_1` FOREIGN KEY (`videoconferencia_id`) REFERENCES `videoconferencias` (`id`);
 
 --
 -- Filtros para la tabla `videoconferencias`
 --
 ALTER TABLE `videoconferencias`
-  ADD CONSTRAINT `videoconferencias_FK` FOREIGN KEY (`tipo`) REFERENCES `tipo_videoconferencia` (`id`),
-  ADD CONSTRAINT `videoconferencias_FK_1` FOREIGN KEY (`unidad`) REFERENCES `unidades` (`id`),
-  ADD CONSTRAINT `videoconferencias_FK_2` FOREIGN KEY (`estado`) REFERENCES `estado_videoconferencia` (`id`),
-  ADD CONSTRAINT `videoconferencias_FK_3` FOREIGN KEY (`solicitante`) REFERENCES `participantes` (`id`);
+  ADD CONSTRAINT `videoconferencias_FK` FOREIGN KEY (`tipo_id`) REFERENCES `tipo_videoconferencia` (`id`),
+  ADD CONSTRAINT `videoconferencias_FK_1` FOREIGN KEY (`unidad_id`) REFERENCES `unidades` (`id`),
+  ADD CONSTRAINT `videoconferencias_FK_2` FOREIGN KEY (`estado_id`) REFERENCES `estado_videoconferencia` (`id`),
+  ADD CONSTRAINT `videoconferencias_FK_3` FOREIGN KEY (`solicitante_id`) REFERENCES `participantes` (`id`);
 
 --
--- Filtros para la tabla `videoconferencia_participantes`
+-- Filtros para la tabla `videoconferencia_participante`
 --
-ALTER TABLE `videoconferencia_participantes`
-  ADD CONSTRAINT `videoconferencia_participantes_ibfk_1` FOREIGN KEY (`idVideoConferencia`) REFERENCES `videoconferencias` (`id`),
-  ADD CONSTRAINT `videoconferencia_participantes_ibfk_2` FOREIGN KEY (`idParticipante`) REFERENCES `participantes` (`id`);
+ALTER TABLE `videoconferencia_participante`
+  ADD CONSTRAINT `videoconferencia_participante_ibfk_1` FOREIGN KEY (`videoconferencia_id`) REFERENCES `videoconferencias` (`id`),
+  ADD CONSTRAINT `videoconferencia_participante_ibfk_2` FOREIGN KEY (`participante_id`) REFERENCES `participantes` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

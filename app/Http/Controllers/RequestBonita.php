@@ -22,7 +22,7 @@ class RequestBonita {
 
     $client = Access::getGuzzleClient();
 
-    try{
+
       //Si el m�todo es POST, hago el request con un header con la variable de sesion
       if ($method == 'POST'){
         $jar = new \GuzzleHttp\Cookie\CookieJar();
@@ -50,11 +50,7 @@ class RequestBonita {
         $response['success'] = true;
         $response['data'] = json_decode($tareas);
       }
-    } catch (RequestException $e) {
-      $response['success'] = false;
-      $response['message'] = $e->getResponse()->getStatusCode() . ' - ' . $e->getResponse()->getReasonPhrase();
-      $response['data'] = [];
-    }
+
 
     return $response;
   }
