@@ -1,0 +1,14 @@
+{
+  "require": {
+    "twig/twig": "^2.0",
+    "guzzlehttp/guzzle": "~6.0",
+    "twbs/bootstrap": "4.3.1",
+    "components/font-awesome": "^5.9",
+    "components/jquery": "^3.4"
+  },
+
+  "autoload": {
+    "psr-4": {"Monitor\\": ["classes/", "view/"] }
+  }
+
+}
