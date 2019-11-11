@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DateTime;
+use DB;
 
 class ApiController extends Controller
 {
@@ -50,11 +51,13 @@ class ApiController extends Controller
       $videoConferencia->motivo = $request->motivo;
       $videoConferencia->solicitante()->associate($solicitante);
 
-      $videoConferencia->save();
+      DB::transaction(function () use ($videoConferencia, $request, $estado_no_iniciada) {
+        $videoConferencia->save();
 
-      $videoConferencia->participantes()->attach($request->participantes);
+        $videoConferencia->participantes()->attach($request->participantes);
 
-      $videoConferencia->estados()->attach($estado_no_iniciada->id, ['descripcion' => "Video conferencia programada"]);
+        $videoConferencia->estados()->attach($estado_no_iniciada->id, ['descripcion' => "Video conferencia programada"]);
+      });
 
       return ["success" => true, "id" => $videoConferencia->id];
     } catch (\Exception $e) {
@@ -72,9 +75,11 @@ class ApiController extends Controller
 
     $videoconferencia = \App\Videoconferencia::find($idConferencia);
 
-    $videoconferencia->estados()->attach([
-      $inicio => ['descripcion' => $observaciones_inicio],
-      $fin => ['descripcion' => $observaciones_final]
-    ]);
+    DB::transaction(function () use ($videoconferencia, $inicio, $observaciones_inicio, $fin, $observaciones_final) {
+      $videoconferencia->estados()->attach([
+        $inicio => ['descripcion' => $observaciones_inicio],
+        $fin => ['descripcion' => $observaciones_final]
+      ]);
+    });
   }
 }

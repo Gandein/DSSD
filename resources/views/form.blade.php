@@ -29,18 +29,19 @@
               <input type="text" class="form-control" id="solicitante" placeholder="Nombre del solicitante">
             </div>-->
             <div class="form-row">
-              <div class="form-group col-md-6 autocomplete">
-                <label for="">Solicitante</label>
-                <input type="text" class="form-control" id="solicitante" placeholder="Nombre del solicitante">
-              </div>
               <div class="form-group col-md-6">
                 <label for="">Rol Solicitante</label>
                 <select class="form-control" id="rolSolicitante">
+                  <option value=""></option>
                   <option>Interno</option>
                   <option>Abogado</option>
                   <option>Juez</option>
                   <option>Procurador</option>
                 </select>
+              </div>
+              <div class="form-group col-md-6 autocomplete">
+                <label for="">Solicitante</label>
+                <input type="text" class="form-control" id="solicitante" placeholder="Nombre del solicitante">
               </div>
             </div>
             <div class="form-group">
@@ -48,18 +49,19 @@
               <input type="text" class="form-control" id="numCausa" placeholder="Ingrese número de causa">
             </div>
             <div class="form-row" id="dynamicInput">
-              <div class="form-group col-md-6 autocomplete">
-                <label for="">Nombre Participante 1</label>
-                <input type="text" class="form-control" id="nombreParticipante1" placeholder="Nombre del participante">
-              </div>
               <div class="form-group col-md-6">
                 <label for="">Rol 1</label>
                 <select class="form-control" id="rolParticipante1">
+                  <option value=""></option>
                   <option>Interno</option>
                   <option>Abogado</option>
                   <option>Juez</option>
                   <option>Procurador</option>
                 </select>
+              </div>
+              <div class="form-group col-md-6 autocomplete">
+                <label for="">Nombre Participante 1</label>
+                <input type="text" class="form-control" id="nombreParticipante1" placeholder="Nombre del participante">
               </div>
             </div>
             <input type="button" value="Agregar otro participante" onClick="addInput();">

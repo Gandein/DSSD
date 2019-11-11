@@ -8,6 +8,17 @@ function enviarDatos() {
   var motivoDeConferencia = document.getElementById('motivoConferencia').value;
   var fecha = document.getElementById('filter-date').value;
 
+  if (!idSolicitante || !numeroCausa || !participantes.length || !motivoConferencia || !fecha) {
+    alert("Formulario incompleto");
+    return;
+  }else{
+    var hora = fecha.split(" ")[1];
+    if (hora != "08:00" && hora != "10:00" && hora != "13:00" && hora != "15:00"){
+      alert("Fecha incorrecta");
+      return;
+    }
+  }
+
   $.ajax({
     url: "http://localhost/DSSD/public/enviarForm",
     headers: {
@@ -17,8 +28,12 @@ function enviarDatos() {
     dataType:"json",
     data:{solicitante: idSolicitante, fecha: fecha, participantes: idParticipantes, motivo: motivoDeConferencia, numeroCausa: numeroCausa },
     success: function(data){
-      console.log("entre");
-      $("body").empty().append('<div class="alert alert-success text-center">La solicitud se envio correctamente</div>');
+      if (data.success) {
+        $("body").empty().append('<div class="alert alert-success text-center">La solicitud se envio correctamente</div>');
+      }else{
+        alert(data.message);
+      }
+
     }
   });
 
@@ -176,9 +191,9 @@ function addInput(){
           //var idInput="nombreParticipante" + (counter + 1);
           //newdiv.innerHTML = "Nombre Participante " + (counter + 1) + " <input type='text' name='losNombres[]' class='form-control form-group col-md-6' id={idInput} placeholder='Nombre del participante'>";
           divRol.className = "form-group col-md-6";
-          divRol.innerHTML = "<label>Rol " + (counter + 1) + "</label> <select class='form-control' id='rolParticipante"+ (counter + 1) +"'><option>Interno</option><option>Abogado</option><option>Juez</option><option>Procurador</option></select>";
-          document.getElementById('dynamicInput').appendChild(divParticipante);
+          divRol.innerHTML = "<label>Rol " + (counter + 1) + "</label> <select onchange='on_change_rol( event, this );' class='form-control' id='rolParticipante"+ (counter + 1) +"'><option value=''></option><option>Interno</option><option>Abogado</option><option>Juez</option><option>Procurador</option></select>";
           document.getElementById('dynamicInput').appendChild(divRol);
+          document.getElementById('dynamicInput').appendChild(divParticipante);
           counter++;
           autocomplete(document.getElementById(inputParticipante.id), participantes);
      }
@@ -200,6 +215,29 @@ $.ajax({
     autocomplete(document.getElementById("solicitante"), participantes);
   }
 });
+
+var interno_seleccionado = false;
+var idSelect;
+function on_change_rol(e){
+  if (!interno_seleccionado && e.target.value == "Interno") {
+    interno_seleccionado = true;
+    idSelect = e.target.id;
+  } else if (interno_seleccionado && e.target.value == "Interno" && e.target.id != idSelect) {
+    e.target.value = null;
+    alert("Ya se selecciono interno")
+  } else if (e.target.id == idSelect && this.value != "Interno"){
+    interno_seleccionado = false;
+    idSelect = null;
+  }
+  if (e.target.id == "rolSolicitante") {
+    $("#solicitante").val(null);
+  }else{
+    $("#" + e.target.id.replace("rol","nombre")).val(null);
+  }
+
+}
+$("#rolSolicitante").on("change", function(e){on_change_rol(e)});
+$("#rolParticipante1").on("change", function(e){on_change_rol(e)});
 
 /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
 console.log(document.getElementById("nombreParticipante1"));

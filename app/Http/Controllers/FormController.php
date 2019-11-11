@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use DateTime;
 use \App\Participante;
+use \App\Unidad;
 
 class FormController extends Controller
 {
@@ -35,22 +36,64 @@ class FormController extends Controller
     return view('form');
   }
 
+  public function mostrarFormLugaresSugeridos(Request $request)
+  {
+    session(['idTarea' => $request->id]);
+
+    $res = RequestBonita::doTheRequest("GET", "API/bpm/humanTask/" . $request->id);
+
+    session(['idCase' => $res["data"]->rootCaseId]);
+
+    $res = RequestBonita::doTheRequest("GET", "API/bpm/caseVariable/" . session("idCase") . "/lugares_sugeridos");
+    $res = json_decode($res["data"]->value);
+
+    $unidades = [];
+    foreach ($res as $index => $unidad) {
+      $unidades[] = ["id" => $unidad->id, "nombre" => $unidad->nombreunidad, "distancia" => $unidad->distancia];
+    }
+
+    return view('formNuevaSeleccion', ["fechas" => $res, "unidades" => $unidades]);
+  }
+
   public function mostrarFormEstadosVideconferencias(Request $request)
   {
     session(['idTarea' => $request->id]);
+
+    $res = RequestBonita::doTheRequest("GET", "API/bpm/humanTask/" . $request->id);
+
+    session(['idCase' => $res["data"]->rootCaseId]);
+    
+    $res = RequestBonita::doTheRequest("GET", "API/bpm/humanTask/" . $request->id);
+    $case = $res["data"]->rootCaseId;
+    $res = RequestBonita::doTheRequest("GET", "API/bpm/caseVariable/" . $case . "/fecha");
+    $res = $res["data"]->value;
+    $res = (new DateTime(str_replace("ART" , "", $res)))->format('d/m/Y H:i');
+
+
+
     $estados_inicio = \App\EstadoVideoconferencia::where('etapa', 'inicio')->get();
     $estados_fin = \App\EstadoVideoconferencia::where('etapa', 'final')->get();
 
-    return view('formDatosLlamada', ["estados_inicio" => $estados_inicio, "estados_fin" => $estados_fin]);
+    return view('formDatosLlamada', ["estados_inicio" => $estados_inicio, "estados_fin" => $estados_fin, "fecha" => $res]);
   }
-
 
   //{solicitante: <id>, fecha:<input->type="datetime-local">,participates: [<id1>, <id2>, ...], motivo: <String>, numeroCausa: <String o int> }
   public function enviarForm(Request $request)
   {
+    if (!$request->solicitante || !$request->participantes || !$request->fecha || !$request->motivo || !$request->numeroCausa) {
+      return ["success" => false, "message" => "Formulario incompleto"];
+    }
+
     $solicitante = Participante::with('tipo_participante')->find($request->solicitante);
     $participantes = Participante::with('tipo_participante')->find($request->participantes);
 
+    if (!$solicitante) {
+      return ["success" => false, "message" => "Solicitante incorrecto"];
+    }
+
+    if (count($participantes) < count($request->participantes)) {
+      return ["success" => false, "message" => "Participantes incorrectos"];
+    }
     //Envio solicitud para cambiar el valor de la variable "unidad"
     $unidad = "";
     //¿El solicitante es el interno?
@@ -61,6 +104,9 @@ class FormController extends Controller
       $interno = $participantes->first(function ($p) {
         return $p->tipo_participante->tipo == "interno";
       });
+      if (!$interno) {
+        return ["success" => false, "message" => "Falta incluir al interno"];
+      }
       $unidad = $interno->unidad;
     }
 
@@ -68,6 +114,11 @@ class FormController extends Controller
 
     //Envio solicitud para cambiar el valor de la variable "fecha"
     $fecha = new DateTime($request->fecha);
+
+    if ($fecha < new DateTime()) {
+      return ["success" => false, "message" => "Fecha Incorrecta. Debe ser mayor a la actual."];
+    }
+
     $fecha =  $fecha->format('D M d H:i:s') . " ART " . $fecha->format('Y');
 
     $res = RequestBonita::doTheRequest("PUT", "API/bpm/caseVariable/" . session("idCase") . '/fecha', ['type' => 'java.util.Date','value' => $fecha]);
@@ -98,22 +149,7 @@ class FormController extends Controller
     //Envio solicitud para completar la idTarea
     $res = RequestBonita::doTheRequest("PUT", "API/bpm/activity/" . session("idTarea"), ['state' => 'completed','variables' => '[]']);
 
-    return ["estado" => "ok"];
-  }
-
-  public function mostrarFormLugaresSugeridos(Request $request)
-  {
-    session(['idTarea' => $request->id]);
-
-    $res = RequestBonita::doTheRequest("GET", "API/bpm/caseVariable/" . session("idCase") . "/lugares_sugeridos");
-    $res = json_decode($res["data"]->value);
-
-    $unidades = [];
-    foreach ($res as $index => $unidad) {
-      $unidades[] = ["id" => $unidad->id, "nombre" => $unidad->nombreunidad];
-    }
-
-    return view('formNuevaSeleccion', ["fechas" => $res, "unidades" => $unidades]);
+    return ["success" => true];
   }
 
   public function enviarFormEstadosVideoconferencia(Request $request)
@@ -122,6 +158,17 @@ class FormController extends Controller
     $id_fin = $request->finalLlamada;
     $observaciones_inicio = $request->observaciones_inicio;
     $observaciones_final = $request->observaciones_final;
+
+    if (!$id_inicio || !$id_fin || !$observaciones_inicio || !$observaciones_final) {
+      return ["success" => false, "message" => "Formulario incompleto"];
+    }
+
+    $estados_inicio = \App\EstadoVideoconferencia::where('etapa', 'inicio')->get()->find($id_inicio);
+    $estados_fin = \App\EstadoVideoconferencia::where('etapa', 'final')->get()->find($id_fin);
+
+    if (!$estados_inicio || !$estados_fin) {
+      return ["success" => false, "message" => "Formulario incompleto"];
+    }
 
     $estado_inicio = \App\EstadoVideoconferencia::find($id_inicio)->estado;
     $estado_fin = \App\EstadoVideoconferencia::find($id_fin)->estado;
@@ -139,13 +186,27 @@ class FormController extends Controller
     $res = RequestBonita::doTheRequest("PUT", "API/bpm/caseVariable/" . session("idCase") . '/observaciones_fin', ['type' => 'java.lang.String','value' => $observaciones_final]);
 
     $res = RequestBonita::doTheRequest("PUT", "API/bpm/activity/" . session("idTarea"), ['state' => 'completed','variables' => '[]']);
+
+    return ["success" => true];
   }
 
   public function enviarFormLugaresSugeridos(Request $request)
   {
+    if (!$request->unidad || !$request->fecha) {
+      return ["success" => false, "message" => "Formulario incompleto"];
+    }
+
+    if (!Unidad::find($request->unidad)) {
+      return ["success" => false, "message" => "Unidad no existe"];
+    }
+
     $nueva_unidad = $request->unidad;
 
     $nueva_fecha = new DateTime($request->fecha);
+    if ($nueva_fecha < new DateTime()) {
+      return ["success" => false, "message" => "Fecha Incorrecta. Debe ser mayor a la actual."];
+    }
+
     $nueva_fecha =  $nueva_fecha->format('D M d H:i:s') . " ART " . $nueva_fecha->format('Y');
 
     $res = RequestBonita::doTheRequest("PUT", "API/bpm/caseVariable/" . session("idCase") . '/unidad', ['type' => 'java.lang.String','value' => $nueva_unidad]);
@@ -153,5 +214,6 @@ class FormController extends Controller
 
     //Envio solicitud para completar la idTarea
     $res = RequestBonita::doTheRequest("PUT", "API/bpm/activity/" . session("idTarea"), ['state' => 'completed','variables' => '[]']);
+    return ["success" => true];
   }
 }

@@ -42,7 +42,7 @@
             <label for="">Unidades cercanas sugeridas</label>
             <select class="form-control" id="unidad">
               @foreach ($unidades as $unidad)
-                <option value="{{$unidad['id']}}">{{$unidad['nombre']}}</option>
+                <option value="{{$unidad['id']}}">{{$unidad['nombre']}} - {{$unidad['distancia']}} km</option>
               @endforeach
             </select>
           </div>
@@ -93,8 +93,7 @@
   $("#unidad").bind("change", function(){
     var fechasPermitidas = Object.keys(fechas_disponibles.find(function(unidad){return unidad.id == $("#unidad").val()}).disponibles);
     $('#filter-date').datetimepicker({allowDates: fechasPermitidas});
-    console.log($("#unidad").val());
-    console.log("enrte");
+    $("#filter-date").val(null)
   });
 
   function enviarDatos() {
@@ -106,17 +105,24 @@
       return;
     }
     hora = fecha.split(" ")[1];
-    console.log(hora);
-    if (hora != "8:00" && hora != "10:00" && hora != "13:00" && hora != "15:00") {
+    if (hora != "08:00" && hora != "10:00" && hora != "13:00" && hora != "15:00") {
       $("#texto_alerta").html("Ingrese fecha y unidad");
       $("#alerta").css({"display": "block"});
       return;
-    }
+    };
     $.ajax({
       headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
       url: "enviarFormLugaresSugeridos",
       type: "POST",
-      data: {unidad: unidad, fecha: fecha}
+      data: {unidad: unidad, fecha: fecha},
+      success: function (result){
+        if (result.success) {
+          $("body").empty().append('<div class="alert alert-success text-center">La solicitud se envio correctamente</div>');
+        } else {
+          $("#texto_alerta").html(result.message);
+          $("#alerta").css({"display": "block"});
+        }
+      }
     });
   }
 </script>
