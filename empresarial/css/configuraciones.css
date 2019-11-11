@@ -1,0 +1,59 @@
+.jumbotron{
+  background-color: #116cff!important;
+}
+
+body {
+
+    background-color: #4b0900!important;
+    height:100vh!important;
+    min-height:100vh;
+}
+
+h1 {
+  font-family: 'Oswald', sans-serif !important;
+    font-size: 500% !important;
+    color:#fde26a!important;
+}
+h2 {
+    font-family: 'Oswald', sans-serif !important;
+    font-size: 350% !important;
+    color:#fde26a!important;
+}
+h3 {
+    font-size: 160% !important;
+    color:#ecb51f!important;
+    font-family: 'Artifika', serif !important;
+}
+
+.logo {
+  margin-left: -40px;
+}
+
+#Libro {
+  margin-left: 130px;
+}
+
+#PrimerArbol{
+  margin-left: 50px;
+}
+
+#SegundoArbol{
+  margin-left: 570px;
+}
+
+#Linkalcomic{
+  position: relative;
+}
+
+#particles1{
+  margin-left: -330px;
+}
+
+#particles2{
+  margin-left: 600px;
+}
+
+#back{
+  position: fixed;
+  margin-left: -80px;
+}

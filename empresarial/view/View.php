@@ -9,7 +9,7 @@ class View extends TwigView {
 
   public static function showInicio($data)
   {
-    echo self::getTwig()->render('inicio.twig', $data);
+    echo self::getTwig()->render('inicio.html.twig', $data);
   }
 
   public static function jsonEncode($data){
