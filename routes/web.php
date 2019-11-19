@@ -27,4 +27,5 @@ Route::prefix('api')->group(function () {
     Route::get('participantes', 'ApiController@getParticipantes')->middleware('cors');
     Route::post('videoconferencia', 'ApiController@guardarVideoConferencia');
     Route::post('estadosVideoconferencia', 'ApiController@guardarEstadosVideoconferencia');
+    Route::get('cantidadEstados', 'ApiController@getCantidadEstados')->middleware('cors');
 });

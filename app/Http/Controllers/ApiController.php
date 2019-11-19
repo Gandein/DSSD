@@ -82,4 +82,15 @@ class ApiController extends Controller
       ]);
     });
   }
+
+  public function getCantidadEstados()
+  {
+    $participantes = DB::table('registro_videoconferencia')
+      ->join('estado_videoconferencia', 'registro_videoconferencia.estado_videoconferencia_id', '=', 'estado_videoconferencia.id')
+      ->select('estado', DB::raw('count(estado_videoconferencia.estado) as cantidad'))
+      ->groupBy('estado')
+      ->get();
+
+    return $participantes;
+  }
 }
