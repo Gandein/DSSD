@@ -28,4 +28,6 @@ Route::prefix('api')->group(function () {
     Route::post('videoconferencia', 'ApiController@guardarVideoConferencia');
     Route::post('estadosVideoconferencia', 'ApiController@guardarEstadosVideoconferencia');
     Route::get('cantidadEstados', 'ApiController@getCantidadEstados')->middleware('cors');
+    Route::get('unidades', 'ApiController@getUnidades')->middleware('cors');
+    Route::get('exitosasUltimoMes', 'ApiController@getExitosasUltimoMes')->middleware('cors');
 });

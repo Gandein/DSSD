@@ -19,6 +19,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        "api/videoconferencia", "enviarFormEstadosVideoconferencia", "api/estadosVideoconferencia", "api/cantidadEstados"
+        "api/videoconferencia", "enviarFormEstadosVideoconferencia", "api/estadosVideoconferencia", "api/cantidadEstados",
+        "api/getUnidades", "api/exitosasUltimoMes"
     ];
 }

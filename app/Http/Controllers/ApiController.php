@@ -93,4 +93,34 @@ class ApiController extends Controller
 
     return $participantes;
   }
+
+  public function getUnidades()
+  {
+    $unidades = \App\Unidad::all();
+    return $unidades;
+  }
+
+  public function getExitosasUltimoMes(Request $request)
+  {
+    $unidad = $request->unidad;
+
+    if (!$unidad) {
+      return null;
+    }
+
+    $from = date('Y-m-d', strtotime('-30 days'));
+    $to = date('Y-m-d', strtotime('0 days'));
+
+    $videoconferencias = DB::table('videoconferencias')
+      ->join('tipo_videoconferencia', 'videoconferencias.tipo_id', '=', 'tipo_videoconferencia.id')
+      ->join('participantes', 'videoconferencias.solicitante_id', '=', 'participantes.id')
+      ->join('registro_videoconferencia', 'videoconferencias.id', '=', 'registro_videoconferencia.videoconferencia_id')
+      ->where('unidad_id' , $unidad)
+      ->where('fecha', '>', $from)
+      ->where('fecha', '<=', $to)
+      ->where('estado_videoconferencia_id', '=', 5)
+      ->get();
+
+    return $videoconferencias;
+  }
 }
