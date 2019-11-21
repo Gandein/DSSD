@@ -45,9 +45,19 @@ foreach (Request::doTheRequest('GET', 'API/bpm/case?p=0&c=1000')['data'] as $ind
   //var_dump($estado);
 }
 
+//foreach (Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000')['data'] as $index => $tarea) {
+  //$nombreTarea = $tarea -> displayName;
+  //if(!array_key_exists($nombreTarea,$nombresTareasEjecutandose)){
+  //$cantidadTareasEjecutandose[$nombreTarea]= 0;
+    //$cantidadTareasEjecutandose[$nombreTarea]++;
+    //array_push($nombresTareasEjecutandose,$nombreTarea);
+//}else {
+  //$cantidadTareasEjecutandose[$nombreTarea]++;
+  //}
+
 foreach (Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000')['data'] as $index => $tarea) {
   $nombreTarea = $tarea -> displayName;
-  if(!array_key_exists($nombreTarea,$nombresTareasEjecutandose)){
+  if(!array_key_exists($nombreTarea,$cantidadTareasEjecutandose)){
   $cantidadTareasEjecutandose[$nombreTarea]= 0;
     $cantidadTareasEjecutandose[$nombreTarea]++;
     array_push($nombresTareasEjecutandose,$nombreTarea);
@@ -58,20 +68,10 @@ foreach (Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000')['data'] as $ind
 }
 
 }
+var_dump($nombresTareasEjecutandose);
+$tareas =Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000')['data'];
+var_dump(Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000'));
 
-foreach (Request::doTheRequest('GET', 'http://localhost/DSSD/public/api/cantidadEstados')['data'] as $index => $estados) {
-  $nombreEstado = $estados -> estado;
-  if(!array_key_exists($nombreTarea,$nombresTareasEjecutandose)){
-  $cantidadTareasEjecutandose[$nombreTarea]= 0;
-    $cantidadTareasEjecutandose[$nombreTarea]++;
-    array_push($nombresTareasEjecutandose,$nombreTarea);
-  //var_dump($cantidadTareas[$nombreTarea]);
-}else {
-  $cantidadTareasEjecutandose[$nombreTarea]++;
-  //var_dump($cantidadTareas[$nombreTarea]);
-}
-
-}
 
 //$response = $client->request('GET', 'http://localhost/DSSD/public/api/cantidadEstados');
 //var_dump($response);
