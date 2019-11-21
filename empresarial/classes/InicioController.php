@@ -58,7 +58,34 @@ foreach (Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000')['data'] as $ind
 }
 
 }
-//var_dump($nombresTareasEjecutandose[0]);
+
+foreach (Request::doTheRequest('GET', 'http://localhost/DSSD/public/api/cantidadEstados')['data'] as $index => $estados) {
+  $nombreEstado = $estados -> estado;
+  if(!array_key_exists($nombreTarea,$nombresTareasEjecutandose)){
+  $cantidadTareasEjecutandose[$nombreTarea]= 0;
+    $cantidadTareasEjecutandose[$nombreTarea]++;
+    array_push($nombresTareasEjecutandose,$nombreTarea);
+  //var_dump($cantidadTareas[$nombreTarea]);
+}else {
+  $cantidadTareasEjecutandose[$nombreTarea]++;
+  //var_dump($cantidadTareas[$nombreTarea]);
+}
+
+}
+
+//$response = $client->request('GET', 'http://localhost/DSSD/public/api/cantidadEstados');
+//var_dump($response);
+//debug.Log($response);
+//var_dump(Request::doTheRequest('GET', 'http://localhost/DSSD/public/api/cantidadEstados')['data']);
+$estadosLlamadas = Request::doTheRequest('GET', 'http://localhost/DSSD/public/api/cantidadEstados')['data'];
+//var_dump(Request::doTheRequest('GET', 'http://localhost/DSSD/public/api/unidades'));
+//var_dump(Request::doTheRequest('GET', 'http://localhost/DSSD/public/api/exitosasUltimoMes?unidad=2'));
+//$string = "http://localhost/DSSD/public/api/exitosasUltimoMes?unidad=2";
+//$string= substr_replace("http://localhost/DSSD/public/api/exitosasUltimoMes?unidad=","2",59,0);
+//var_dump(Request::doTheRequest('GET', $string));
+
+
+//console.Log(Request::doTheRequest('GET', 'http://localhost/DSSD/public/api/cantidadEstados'));
 
 //'displayName' => string 'Ingreso de informacion de videollamada';
 
@@ -67,7 +94,8 @@ $data = ["casos" => count(Request::doTheRequest('GET', 'API/bpm/case?p=0&c=1000'
 "procesos" => count(Request::doTheRequest('GET', 'API/bpm/process?p=0&c=1000')['data']),
 "estadosCase" => $estadosCase,
 "cantidadTareasEjecutandose" => $cantidadTareasEjecutandose,
-"tareasEjecutandose" => $nombresTareasEjecutandose]; //La clave del array se accede como variable en templates/inicio.twig
+"tareasEjecutandose" => $nombresTareasEjecutandose,
+'estadosLlamadas' => $estadosLlamadas]; //La clave del array se accede como variable en templates/inicio.twig
     View::showInicio($data);
 
   }
