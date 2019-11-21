@@ -23,7 +23,7 @@ class ApiController extends Controller
       $participantes = \App\Participante::with('tipo_participante')->find($request->participantes);
       $unidad = \App\Unidad::find($request->unidad);
 
-      $fecha = new DateTime($request->fecha);
+      $fecha = DateTime::createFromFormat('d/m/Y', $request->fecha);
       $fecha =  $fecha->format('Y-m-d');
 
       $tipoVideoConferencia = "";
