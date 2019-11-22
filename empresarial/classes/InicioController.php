@@ -68,9 +68,9 @@ foreach (Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000')['data'] as $ind
 }
 
 }
-var_dump($nombresTareasEjecutandose);
+//var_dump($nombresTareasEjecutandose);
 $tareas =Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000')['data'];
-var_dump(Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000'));
+//var_dump(Request::doTheRequest('GET', 'API/bpm/task?p=0&c=1000'));
 
 
 //$response = $client->request('GET', 'http://localhost/DSSD/public/api/cantidadEstados');
